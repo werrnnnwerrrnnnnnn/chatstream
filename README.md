@@ -100,28 +100,27 @@ To start the PostgreSQL database server:
 ---
 
 ## 📍 Accessing the Rails Container
-
 To run Rails commands (e.g., generate models, migrate DB):
 
-1. Enter the running container:
+1. **Enter the running container:**
 
    ```bash
-   docker exec -it students-app bash
+   docker exec -it app_web bash
    ```
 
-2. To generate a new scaffold (example):
+2. **Generate a new scaffold (example):**
 
    ```bash
    ./bin/rails generate scaffold course name:string credits:integer
    ```
 
-3. To apply database migrations:
+3. **Run database migrations:**
 
    ```bash
    bundle exec rake db:migrate
    ```
 
-4. Exit the container:
+4. **Exit the container:**
 
    ```bash
    exit
@@ -129,14 +128,32 @@ To run Rails commands (e.g., generate models, migrate DB):
 
 ---
 
-## 📍 Stopping All Containers
+### 🐳 Basic Docker Commands
 
-From the directory where your `docker-compose.yml` is located, run:
+- **Build Docker images:**
+  ```bash
+  docker compose build
+  ```
 
-```bash
-docker compose down --remove-orphans
-```
+- **Create and run containers:**
+  ```bash
+  docker compose up
+  docker compose up -d
+  ```
 
-This will shut down all containers and remove unused ones.
+- **Stop and remove containers:**
+  ```bash
+  docker compose down --remove-orphans
+  ```
+
+- **Access container for Rails commands:**
+  ```bash
+  docker exec -it app_web bash
+  ```
+
+- **Exit container:**
+  ```bash
+  exit
+  ```
 
 ---
