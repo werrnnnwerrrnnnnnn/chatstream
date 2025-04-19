@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "home/index"
   devise_for :users
   resources :messages
   resources :chat_rooms do
@@ -18,4 +19,5 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  root "home#index"
 end
