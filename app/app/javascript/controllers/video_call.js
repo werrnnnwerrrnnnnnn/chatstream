@@ -6,19 +6,10 @@ const config = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
 };
 
-// ✅ Wait for DOM + channel to be ready
-document.addEventListener("DOMContentLoaded", () => {
-  const waitForChannel = () => {
-    if (window.chatRoomChannel && typeof window.chatRoomChannel.send === "function") {
-      console.log("✅ chatRoomChannel ready. Setting up video...");
-      initializeVideoSetup();
-    } else {
-      console.warn("⏳ Waiting for chatRoomChannel...");
-      setTimeout(waitForChannel, 100);
-    }
-  };
-  waitForChannel();
-});
+document.addEventListener("chatRoomChannelReady", () => {
+    console.log("✅ chatRoomChannel ready. Setting up video...");
+    initializeVideoSetup();
+  });
 
 function initializeVideoSetup() {
   const startButton = document.getElementById("start-video");
@@ -49,16 +40,34 @@ function initializeVideoSetup() {
       });
 
       peerConnection.ontrack = event => {
-        document.getElementById("remoteVideo").srcObject = event.streams[0];
+        console.log("📺 Got remote track", event.streams);
+
+        const remoteVideo = document.getElementById("remoteVideo");
+        if (remoteVideo) {
+          // 🔁 Always set new stream — even if already assigned
+          remoteVideo.srcObject = event.streams[0];
+          remoteVideo.play().catch(e => console.warn("⚠️ remoteVideo play failed:", e));
+        } else {
+          console.warn("❌ remoteVideo element not found");
+        }
       };
 
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
+      const senderId = document.getElementById("chat-room-id").dataset.senderId;
 
-      sendSignal({
-        type: "offer",
-        sdp: offer.sdp
-      });
+      // 🔧 TEMP: You should dynamically get both IDs.
+      // For now we use fixed partner ID list for testing
+      const receiverId = document.getElementById("chat-room-id").dataset.receiverId;
+      const allIds = [senderId, receiverId].sort();
+      const isInitiator = senderId === allIds[0];
+      
+      if (isInitiator) {
+        console.log("🚀 Acting as initiator, sending offer");
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        sendSignal({ type: "offer", sdp: offer.sdp });
+      } else {
+        console.log("🕓 Waiting for offer from peer");
+      }
 
       peerConnection.onicecandidate = event => {
         if (event.candidate) {
@@ -83,7 +92,7 @@ function sendSignal(data) {
     return;
   }
 
-  window.chatRoomChannel.send({
+  window.chatRoomChannel.perform("signal", {
     chat_room_id: chatRoomId,
     data: {
       ...data,

@@ -1,6 +1,16 @@
 <p style="color: green"><%= notice %></p>
 
-<div id="chat-room-id" data-chat-room-id="<%= @chat_room.id %>" data-sender-id="<%= @sender_id %>"></div>
+<!-- ✅ KEEP ONLY THIS ONE -->
+<div id="chat-room-id"
+     data-chat-room-id="<%= @chat_room.id %>"
+     data-sender-id="<%= @current_user.id %>"
+     data-receiver-id="<%= @receiver&.id %>">
+</div>
+
+<div>
+  <video id="localVideo" autoplay muted playsinline style="width: 300px; border-radius: 8px;"></video>
+  <video id="remoteVideo" autoplay playsinline style="width: 300px; border-radius: 8px; background: #ddd;"></video>
+</div>
 
 <div id="messages">
   <%= render @chat_room.messages %>
@@ -17,16 +27,11 @@
 <% end %>
 
 <button id="start-video">Start Video Call</button>
-<div>
-  <video id="localVideo" autoplay muted playsinline style="width: 300px; border-radius: 8px;"></video>
-  <video id="remoteVideo" autoplay playsinline style="width: 300px; border-radius: 8px;"></video>
-</div>
 
 <%= render @chat_room %>
 
 <div>
   <%= link_to "Edit this chat room", edit_chat_room_path(@chat_room) %> |
   <%= link_to "Back to chat rooms", chat_rooms_path %>
-
   <%= button_to "Destroy this chat room", @chat_room, method: :delete %>
 </div>

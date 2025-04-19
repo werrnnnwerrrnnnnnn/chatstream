@@ -10,7 +10,12 @@ class ChatRoomsController < ApplicationController
   # GET /chat_rooms/1 or /chat_rooms/1.json
   def show
     @chat_room = ChatRoom.find(params[:id])
-    @sender_id = session[:user_id]  # ✅ Replace this with your actual login/session logic
+    @current_user = User.first # temporary
+  
+    puts "📦 All users in chat room: #{@chat_room.users.inspect}"
+  
+    @receiver = @chat_room.users.where.not(id: @current_user.id).first
+    puts "📡 Receiver resolved: #{@receiver&.name || 'nil'}"
   end
 
   # GET /chat_rooms/new

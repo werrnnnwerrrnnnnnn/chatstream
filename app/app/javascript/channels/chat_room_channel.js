@@ -4,45 +4,51 @@ const chatRoomElement = document.getElementById("chat-room-id");
 
 if (chatRoomElement) {
   const chatRoomId = chatRoomElement.dataset.chatRoomId;
+  const senderId = chatRoomElement.dataset.senderId;
 
   window.chatRoomChannel = consumer.subscriptions.create(
     { channel: "ChatRoomChannel", chat_room_id: chatRoomId },
     {
+      connected() {
+        // ✅ Dispatch a custom event when ready
+        document.dispatchEvent(new Event("chatRoomChannelReady"));
+      },
+
       received(data) {
         console.log("📨 Received signaling:", data);
-        
-        const senderId = document.getElementById("chat-room-id").dataset.senderId;
+
+        // 👤 Skip if it's your own signal
         if (data.sender_id === senderId) return;
 
-        if (data.type === "offer") {
-          if (!window.peerConnection) {
-            return console.error("❌ No peerConnection yet");
-          }
+        // ❗ Safety check
+        if (!window.peerConnection) {
+          console.warn("⚠️ No peerConnection yet. Ignoring signal.");
+          return;
+        }
 
-          window.peerConnection.setRemoteDescription(
-            new RTCSessionDescription({ type: "offer", sdp: data.sdp })
-          ).then(async () => {
+        if (data.type === "offer") {
+          window.peerConnection.setRemoteDescription(new RTCSessionDescription({
+            type: "offer",
+            sdp: data.sdp
+          })).then(async () => {
             const answer = await window.peerConnection.createAnswer();
             await window.peerConnection.setLocalDescription(answer);
-
             window.chatRoomChannel.send({
               chat_room_id: chatRoomId,
               data: {
                 type: "answer",
-                sdp: answer.sdp
+                sdp: answer.sdp,
+                sender_id: senderId
               }
             });
           });
         } else if (data.type === "answer") {
-          if (!window.peerConnection) return;
-          window.peerConnection.setRemoteDescription(
-            new RTCSessionDescription({ type: "answer", sdp: data.sdp })
-          );
+          window.peerConnection.setRemoteDescription(new RTCSessionDescription({
+            type: "answer",
+            sdp: data.sdp
+          }));
         } else if (data.type === "ice") {
-          if (!window.peerConnection) return;
-          window.peerConnection.addIceCandidate(
-            new RTCIceCandidate(data.candidate)
-          );
+          window.peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
         }
       },
 
