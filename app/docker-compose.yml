@@ -10,6 +10,7 @@ services:
         rm -f /rails/tmp/pids/server.pid &&
         bundle exec rake db:create &&
         bundle exec rake db:migrate &&
+        ./bin/rails assets:precompile &&
         ./bin/rails server -b 0.0.0.0 -p 3000
       "
     ports:

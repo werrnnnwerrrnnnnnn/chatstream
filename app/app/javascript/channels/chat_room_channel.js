@@ -1,30 +1,57 @@
-import consumer from "channels/consumer"
+import consumer from "./consumer";
 
-consumer.subscriptions.create("ChatRoomChannel", {
-  connected() {
-    // Called when the subscription is ready for use on the server
-  },
+const chatRoomElement = document.getElementById("chat-room-id");
 
-  disconnected() {
-    // Called when the subscription has been terminated by the server
-  },
-
-  received(data) {
-    // Called when there's incoming data on the websocket for this channel
-  }
-});
-
-const chatRoomElement = document.getElementById("chat-room-id")
 if (chatRoomElement) {
-  const chatRoomId = chatRoomElement.dataset.chatRoomId
+  const chatRoomId = chatRoomElement.dataset.chatRoomId;
 
-  consumer.subscriptions.create(
+  window.chatRoomChannel = consumer.subscriptions.create(
     { channel: "ChatRoomChannel", chat_room_id: chatRoomId },
     {
       received(data) {
-        const messagesContainer = document.getElementById("messages")
-        messagesContainer.insertAdjacentHTML("beforeend", data.message)
+        console.log("📨 Received signaling:", data);
+        
+        const senderId = document.getElementById("chat-room-id").dataset.senderId;
+        if (data.sender_id === senderId) return;
+
+        if (data.type === "offer") {
+          if (!window.peerConnection) {
+            return console.error("❌ No peerConnection yet");
+          }
+
+          window.peerConnection.setRemoteDescription(
+            new RTCSessionDescription({ type: "offer", sdp: data.sdp })
+          ).then(async () => {
+            const answer = await window.peerConnection.createAnswer();
+            await window.peerConnection.setLocalDescription(answer);
+
+            window.chatRoomChannel.send({
+              chat_room_id: chatRoomId,
+              data: {
+                type: "answer",
+                sdp: answer.sdp
+              }
+            });
+          });
+        } else if (data.type === "answer") {
+          if (!window.peerConnection) return;
+          window.peerConnection.setRemoteDescription(
+            new RTCSessionDescription({ type: "answer", sdp: data.sdp })
+          );
+        } else if (data.type === "ice") {
+          if (!window.peerConnection) return;
+          window.peerConnection.addIceCandidate(
+            new RTCIceCandidate(data.candidate)
+          );
+        }
+      },
+
+      sendSignal(data) {
+        this.send({
+          chat_room_id: chatRoomId,
+          data: data
+        });
       }
     }
-  )
+  );
 }

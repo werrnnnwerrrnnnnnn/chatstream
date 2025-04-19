@@ -1,6 +1,6 @@
 <p style="color: green"><%= notice %></p>
 
-<div id="chat-room-id" data-chat-room-id="<%= @chat_room.id %>"></div>
+<div id="chat-room-id" data-chat-room-id="<%= @chat_room.id %>" data-sender-id="<%= @sender_id %>"></div>
 
 <div id="messages">
   <%= render @chat_room.messages %>
@@ -15,6 +15,12 @@
   </div>
   <%= form.submit "Send" %>
 <% end %>
+
+<button id="start-video">Start Video Call</button>
+<div>
+  <video id="localVideo" autoplay muted playsinline style="width: 300px; border-radius: 8px;"></video>
+  <video id="remoteVideo" autoplay playsinline style="width: 300px; border-radius: 8px;"></video>
+</div>
 
 <%= render @chat_room %>
 
