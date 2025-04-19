@@ -1,4 +1,5 @@
 class ChatRoomsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_chat_room, only: %i[ show edit update destroy ]
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
 
