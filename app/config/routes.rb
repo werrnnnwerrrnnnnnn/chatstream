@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   resources :messages
-  resources :chat_rooms
+  resources :chat_rooms do
+    resources :messages, only: [:create]
+  end
+
   resources :students
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

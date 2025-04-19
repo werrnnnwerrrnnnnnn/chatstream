@@ -21,17 +21,20 @@ class MessagesController < ApplicationController
 
   # POST /messages or /messages.json
   def create
-    @message = Message.new(message_params)
+    @chat_room = ChatRoom.find(params[:chat_room_id])
+    @message = @chat_room.messages.build(message_params)
   
     if @message.save
-      # 🔴 Add this block to broadcast to the chat room's WebSocket stream
-      ActionCable.server.broadcast "chat_room_#{@message.chat_room_id}", {
-        content: @message.content,
-        user: @message.user
-      }
+      # ✅ Broadcast the rendered message partial
+      ActionCable.server.broadcast(
+        "chat_room_#{@chat_room.id}",
+        {
+          message: render_to_string(partial: "messages/message", locals: { message: @message })
+        }
+      )
   
       respond_to do |format|
-        format.html { redirect_to @message.chat_room, notice: 'Message was successfully created.' }
+        format.html { redirect_to @chat_room, notice: 'Message was successfully created.' }
         format.json { render :show, status: :created, location: @message }
       end
     else

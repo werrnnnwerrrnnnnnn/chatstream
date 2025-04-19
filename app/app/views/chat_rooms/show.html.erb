@@ -1,5 +1,21 @@
 <p style="color: green"><%= notice %></p>
 
+<div id="chat-room-id" data-chat-room-id="<%= @chat_room.id %>"></div>
+
+<div id="messages">
+  <%= render @chat_room.messages %>
+</div>
+
+<%= form_with(model: [@chat_room, Message.new], local: true) do |form| %>
+  <div>
+    <%= form.text_field :user, placeholder: "Your name" %>
+  </div>
+  <div>
+    <%= form.text_area :content, placeholder: "Type your message..." %>
+  </div>
+  <%= form.submit "Send" %>
+<% end %>
+
 <%= render @chat_room %>
 
 <div>

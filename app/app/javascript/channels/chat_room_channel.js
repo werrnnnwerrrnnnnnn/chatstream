@@ -13,3 +13,18 @@ consumer.subscriptions.create("ChatRoomChannel", {
     // Called when there's incoming data on the websocket for this channel
   }
 });
+
+const chatRoomElement = document.getElementById("chat-room-id")
+if (chatRoomElement) {
+  const chatRoomId = chatRoomElement.dataset.chatRoomId
+
+  consumer.subscriptions.create(
+    { channel: "ChatRoomChannel", chat_room_id: chatRoomId },
+    {
+      received(data) {
+        const messagesContainer = document.getElementById("messages")
+        messagesContainer.insertAdjacentHTML("beforeend", data.message)
+      }
+    }
+  )
+}

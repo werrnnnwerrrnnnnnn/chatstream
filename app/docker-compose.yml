@@ -5,14 +5,38 @@ services:
       dockerfile: Dockerfile.dev
     container_name: app_web
     image: app_web:0.1
-    command: bash -c "bundle exec rake db:create && bundle exec rake db:migrate && ./bin/rails server -b 0.0.0.0 -p 3000"
+    command: >
+      bash -c "
+        rm -f /rails/tmp/pids/server.pid &&
+        bundle exec rake db:create &&
+        bundle exec rake db:migrate &&
+        ./bin/rails server -b 0.0.0.0 -p 3000
+      "
     ports:
       - "3003:3000"
     networks:
       - app_network
     volumes:
       - ./:/rails
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379/1
+    platform: linux/amd64
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app_network
 
 networks:
   app_network:
     external: true
+
+volumes:
+  redis-data:
