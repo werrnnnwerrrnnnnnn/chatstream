@@ -1,0 +1,26 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Chat rooms" %>
+
+<h1>Chat rooms</h1>
+
+<div id="chat_rooms">
+  <% @chat_rooms.each do |chat_room| %>
+    <% if chat_room.present? %>
+      <%= render chat_room %>
+      <p>
+        <%= link_to "Show this chat room", chat_room_path(chat_room) %>
+      </p>
+    <% end %>
+  <% end %>
+</div>
+
+<%= link_to "New chat room", new_chat_room_path %>
+
+<% if flash[:notice] %>
+  <p style="color: green;"><%= flash[:notice] %></p>
+<% end %>
+
+<% if flash[:alert] %>
+  <p style="color: red;"><%= flash[:alert] %></p>
+<% end %>
