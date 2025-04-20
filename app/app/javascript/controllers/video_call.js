@@ -10,24 +10,27 @@ document.addEventListener("chatRoomChannelReady", () => {
     initializeStreaming();
   
     const vid = document.getElementById("remoteVideo");
-    vid.style.display = "none"; // Hide bugged <video>
+    vid.style.display = "none"; // Hide buggy video
   
-    // Canvas fallback rendering
-    const canvas = document.createElement("canvas");
-    canvas.width = 300;
-    canvas.height = 200;
-    canvas.style.border = "2px solid green";
-    canvas.style.borderRadius = "8px";
-    document.getElementById("chat-room-id").appendChild(canvas);
+    // ✅ Only create canvas if it doesn't already exist
+    if (!document.getElementById("remoteCanvas")) {
+      const canvas = document.createElement("canvas");
+      canvas.id = "remoteCanvas";
+      canvas.width = 300;
+      canvas.height = 200;
+      canvas.style.border = "2px solid green";
+      canvas.style.borderRadius = "8px";
+      document.getElementById("chat-room-id").appendChild(canvas);
   
-    const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d");
   
-    // Repeated drawing loop
-    setInterval(() => {
-      if (vid.readyState >= 2) {
-        ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
-      }
-    }, 100);
+      // Draw from hidden <video> to canvas
+      setInterval(() => {
+        if (vid.readyState >= 2) {
+          ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+        }
+      }, 100);
+    }
   });
 
 // In video_call.js
