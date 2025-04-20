@@ -20,6 +20,7 @@
   <p id="video-status" class="text-muted small mb-4">📡 Waiting for stream to start...</p>
 
   <div id="messages" class="mb-4">
+    <%= turbo_stream_from @chat_room %>
     <%= render @chat_room.messages %>
   </div>
 
