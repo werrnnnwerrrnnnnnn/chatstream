@@ -1,37 +1,39 @@
 <p style="color: green"><%= notice %></p>
 
-<!-- ✅ KEEP ONLY THIS ONE -->
 <div id="chat-room-id"
      data-chat-room-id="<%= @chat_room.id %>"
-     data-sender-id="<%= @current_user.id %>"
-     data-receiver-id="<%= @receiver&.id %>">
-</div>
+     data-sender-id="<%= current_user.id %>"
+     data-is-streamer="<%= current_user == @chat_room.streamer %>">
 
-<div>
-  <video id="localVideo" autoplay muted playsinline style="width: 300px; border-radius: 8px;"></video>
-  <video id="remoteVideo" autoplay playsinline style="width: 300px; border-radius: 8px; background: #ddd;"></video>
-</div>
+  <% if current_user == @chat_room.streamer %>
+    <button id="start-stream">Start Streaming</button>
+  <% end %>
 
-<div id="messages">
-  <%= render @chat_room.messages %>
-</div>
-
-<%= form_with(model: [@chat_room, Message.new], local: true) do |form| %>
   <div>
-    <%= form.text_field :user, placeholder: "Your name" %>
+    <video id="localVideo" autoplay muted playsinline style="width: 300px; border-radius: 8px;"></video>
+    <video id="remoteVideo" autoplay playsinline muted style="display: none;"></video>
+    <p id="video-status" style="font-size: 12px; color: gray;">Waiting for stream to start...</p>
   </div>
+
+  <div id="messages">
+    <%= render @chat_room.messages %>
+  </div>
+
+  <%= form_with(model: [@chat_room, Message.new], local: true) do |form| %>
+    <div>
+      <%= form.text_field :user, placeholder: "Your name" %>
+    </div>
+    <div>
+      <%= form.text_area :content, placeholder: "Type your message..." %>
+    </div>
+    <%= form.submit "Send" %>
+  <% end %>
+
+  <%= render @chat_room %>
+
   <div>
-    <%= form.text_area :content, placeholder: "Type your message..." %>
+    <%= link_to "Edit this chat room", edit_chat_room_path(@chat_room) %> |
+    <%= link_to "Back to chat rooms", chat_rooms_path %>
+    <%= button_to "Destroy this chat room", @chat_room, method: :delete %>
   </div>
-  <%= form.submit "Send" %>
-<% end %>
-
-<button id="start-video">Start Video Call</button>
-
-<%= render @chat_room %>
-
-<div>
-  <%= link_to "Edit this chat room", edit_chat_room_path(@chat_room) %> |
-  <%= link_to "Back to chat rooms", chat_rooms_path %>
-  <%= button_to "Destroy this chat room", @chat_room, method: :delete %>
 </div>

@@ -1,102 +1,180 @@
 let localStream;
-let peerConnection;
 window.peerConnection = null;
+window.pendingCandidates = [];
 
 const config = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
 };
 
 document.addEventListener("chatRoomChannelReady", () => {
-    console.log("✅ chatRoomChannel ready. Setting up video...");
-    initializeVideoSetup();
+    initializeStreaming();
+  
+    const vid = document.getElementById("remoteVideo");
+    vid.style.display = "none"; // Hide bugged <video>
+  
+    // Canvas fallback rendering
+    const canvas = document.createElement("canvas");
+    canvas.width = 300;
+    canvas.height = 200;
+    canvas.style.border = "2px solid green";
+    canvas.style.borderRadius = "8px";
+    document.getElementById("chat-room-id").appendChild(canvas);
+  
+    const ctx = canvas.getContext("2d");
+  
+    // Repeated drawing loop
+    setInterval(() => {
+      if (vid.readyState >= 2) {
+        ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+      }
+    }, 100);
   });
 
-function initializeVideoSetup() {
-  const startButton = document.getElementById("start-video");
-  const localVideo = document.getElementById("localVideo");
+// In video_call.js
+function initializeStreaming() {
+    const isStreamer = document.getElementById("chat-room-id").dataset.isStreamer === "true";
+  
+    // Initialize peer connection immediately for both sides
+    window.peerConnection = new RTCPeerConnection(config);
+    window.pendingCandidates = [];
+  
+    // Set up event handlers
+    window.peerConnection.ontrack = event => {
+        console.log("📺 Received remote stream");
+        const remoteVideo = document.getElementById("remoteVideo");
+        if (event.streams && event.streams[0]) {
+          remoteVideo.srcObject = event.streams[0];
+          remoteVideo.onloadedmetadata = () => {
+            console.log("🎥 Remote video ready to play");
+            remoteVideo.play()
+              .then(() => {
+                document.getElementById("video-status").innerText = "Streaming...";
+              })
+              .catch(e => {
+                console.error("❌ Video play error:", e);
+              });
+          };
+        } else {
+          console.warn("⚠️ No remote streams in event");
+        }
+      };
 
-  if (!startButton || !localVideo) {
-    console.error("❌ Missing video call elements");
-    return;
+    // 🔽 ADD THIS BLOCK HERE:
+    document.body.addEventListener("click", () => {
+        const remoteVideo = document.getElementById("remoteVideo");
+        if (remoteVideo && remoteVideo.paused) {
+        remoteVideo.play().then(() => {
+            console.log("▶️ Remote video started by user click");
+        }).catch(err => {
+            console.warn("⚠️ Remote video play error after user interaction:", err);
+        });
+        }
+    });
+  
+    window.peerConnection.onicecandidate = event => {
+      if (event.candidate) {
+        sendSignal({
+          type: "ice",
+          candidate: event.candidate,
+        });
+      }
+    };
+  
+    if (isStreamer) {
+      // Streamer setup
+      const streamButton = document.getElementById("start-stream");
+      if (streamButton) {
+        streamButton.addEventListener("click", handleStreamStart);
+      }
+    } else {
+      // Viewer-specific setup
+      console.log("👀 Viewer ready, waiting for offer...");
+      // Check for pending offer every 500ms
+      const offerCheckInterval = setInterval(() => {
+        if (window.pendingOffer) {
+          console.log("📨 Processing pending offer");
+          window.processOffer(window.pendingOffer);
+          window.pendingOffer = null;
+          clearInterval(offerCheckInterval);
+        }
+      }, 500);
+    }
   }
 
-  startButton.addEventListener("click", async () => {
-    console.log("▶️ Start Video Clicked");
-
-    try {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
+function handleStreamStart() {
+    const localVideo = document.getElementById("localVideo");
+    
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(stream => {
+        localStream = stream;
+        localVideo.srcObject = stream;
+        console.log("📹 Local stream acquired");
+  
+        // Add tracks to peer connection
+        stream.getTracks().forEach(track => {
+            console.log("🎙️ Adding track:", track.kind);
+            window.peerConnection.addTrack(track, stream);
+        });
+  
+        return window.peerConnection.createOffer();
+      })
+      .then(offer => {
+        console.log("📨 Created offer");
+        return window.peerConnection.setLocalDescription(offer);
+      })
+      .then(() => {
+        console.log("📤 Sending offer");
+        sendSignal({
+          type: "offer",
+          sdp: window.peerConnection.localDescription.sdp,
+        });
+      })
+      .catch(error => {
+        console.error("❌ Stream setup error:", error);
       });
+  }
 
-      localVideo.srcObject = localStream;
-      console.log("✅ Local stream started");
+function handleIceCandidate(event) {
+  if (event.candidate) {
+    sendSignal({
+      type: "ice",
+      candidate: event.candidate,
+    });
+  }
+}
 
-      peerConnection = new RTCPeerConnection(config);
-      window.peerConnection = peerConnection;
-
-      localStream.getTracks().forEach(track => {
-        peerConnection.addTrack(track, localStream);
-      });
-
-      peerConnection.ontrack = event => {
-        console.log("📺 Got remote track", event.streams);
-
-        const remoteVideo = document.getElementById("remoteVideo");
-        if (remoteVideo) {
-          // 🔁 Always set new stream — even if already assigned
-          remoteVideo.srcObject = event.streams[0];
-          remoteVideo.play().catch(e => console.warn("⚠️ remoteVideo play failed:", e));
-        } else {
-          console.warn("❌ remoteVideo element not found");
-        }
-      };
-
-      const senderId = document.getElementById("chat-room-id").dataset.senderId;
-
-      // 🔧 TEMP: You should dynamically get both IDs.
-      // For now we use fixed partner ID list for testing
-      const receiverId = document.getElementById("chat-room-id").dataset.receiverId;
-      const allIds = [senderId, receiverId].sort();
-      const isInitiator = senderId === allIds[0];
-      
-      if (isInitiator) {
-        console.log("🚀 Acting as initiator, sending offer");
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        sendSignal({ type: "offer", sdp: offer.sdp });
-      } else {
-        console.log("🕓 Waiting for offer from peer");
-      }
-
-      peerConnection.onicecandidate = event => {
-        if (event.candidate) {
-          sendSignal({
-            type: "ice",
-            candidate: event.candidate
-          });
-        }
-      };
-    } catch (err) {
-      console.error("❌ Error accessing media devices:", err);
-    }
-  });
+function handleRemoteTrack(event) {
+  const remoteVideo = document.getElementById("remoteVideo");
+  console.log("📺 Received remote track");
+  if (event.streams && event.streams[0]) {
+    remoteVideo.srcObject = event.streams[0];
+  }
 }
 
 function sendSignal(data) {
-  const chatRoomId = document.getElementById("chat-room-id").dataset.chatRoomId;
-  const senderId = document.getElementById("chat-room-id").dataset.senderId;
+  const chatRoomElement = document.getElementById("chat-room-id");
+  const chatRoomId = chatRoomElement.dataset.chatRoomId;
+  const senderId = chatRoomElement.dataset.senderId;
 
   if (!window.chatRoomChannel) {
-    console.error("❌ chatRoomChannel is not defined");
+    console.error("❌ chatRoomChannel not ready");
     return;
   }
 
-  window.chatRoomChannel.perform("signal", {
-    chat_room_id: chatRoomId,
-    data: {
-      ...data,
-      sender_id: senderId
-    }
+  window.chatRoomChannel.sendSignal({
+    ...data,
+    sender_id: senderId,
   });
 }
+
+window.addEventListener('beforeunload', () => {
+    console.log("🧹 Cleaning up WebRTC resources");
+    if (window.peerConnection) {
+      console.log("🚪 Closing peer connection");
+      window.peerConnection.close();
+    }
+    if (localStream) {
+      console.log("🛑 Stopping local stream tracks");
+      localStream.getTracks().forEach(track => track.stop());
+    }
+  });
