@@ -27,7 +27,7 @@
     <%= render @chat_room.messages %>
   </div>
 
-  <%= form_with(model: [@chat_room, Message.new], local: false, data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" }, class: "mb-4") do |form| %>
+  <%= form_with(model: [@chat_room, Message.new], local: false, data: { controller: "message-submit reset-form", action: "turbo:submit-end->reset-form#reset" }, class: "mb-4") do |form| %>
     <div class="mb-2">
       <%= form.text_area :content, placeholder: "Type your message...", class: "form-control", rows: 3 %>
     </div>
