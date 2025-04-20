@@ -26,8 +26,19 @@ document.addEventListener("chatRoomChannelReady", () => {
     canvas.height = 200;
     canvas.style.border = "2px solid green";
     canvas.style.borderRadius = "8px";
+    
     const messagesDiv = document.getElementById("messages");
     messagesDiv.parentNode.insertBefore(canvas, messagesDiv);
+    
+    // ✅ 👇 Insert status text below the canvas
+    const existingStatus = document.getElementById("video-status");
+    if (existingStatus) existingStatus.remove();
+    
+    const statusText = document.createElement("p");
+    statusText.id = "video-status";
+    statusText.className = "text-muted small";
+    statusText.innerText = "👾 Waiting for stream to start...";
+    canvas.parentNode.insertBefore(statusText, canvas.nextSibling);
   
     const ctx = canvas.getContext("2d");
   
@@ -56,7 +67,7 @@ function initializeStreaming() {
             console.log("🎥 Remote video ready to play");
             remoteVideo.play()
               .then(() => {
-                document.getElementById("video-status").innerText = "Streaming...";
+                document.getElementById("video-status").innerText = "👾 Streaming...";
               })
               .catch(e => {
                 console.error("❌ Video play error:", e);
@@ -118,6 +129,12 @@ function handleStreamStart() {
         localVideo.srcObject = stream;
         console.log("📹 Local stream acquired");
   
+        // 👉 Add this here
+        const statusElement = document.getElementById("video-status");
+        if (statusElement) {
+          statusElement.innerText = "👾 You are now streaming";
+        }
+
         // Add tracks to peer connection
         stream.getTracks().forEach(track => {
             console.log("🎙️ Adding track:", track.kind);

@@ -14,12 +14,13 @@
 
   <div class="d-flex flex-wrap gap-3 mb-3">
     <% if current_user == @chat_room.streamer %>
-      <video id="localVideo" autoplay muted playsinline class="rounded border" style="width: 300px;"></video>
+      <div class="d-flex flex-column align-items-start mb-3">
+        <video id="localVideo" autoplay muted playsinline class="rounded border" style="width: 300px;"></video>
+        <p id="video-status" class="text-muted small mt-2">📡 Waiting to start stream...</p>
+      </div>
     <% end %>
     <video id="remoteVideo" autoplay playsinline muted style="display: none;"></video>
   </div>
-
-  <p id="video-status" class="text-muted small mb-4">📡 Waiting for stream to start...</p>
 
   <div id="messages" class="mb-4">
     <%= turbo_stream_from @chat_room %>
