@@ -1,4 +1,5 @@
 class ChatRoomsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_chat_room, only: %i[ show edit update destroy ]
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
 
@@ -9,6 +10,12 @@ class ChatRoomsController < ApplicationController
 
   # GET /chat_rooms/1 or /chat_rooms/1.json
   def show
+    @chat_room = ChatRoom.find(params[:id])
+  
+    puts "📦 All users in chat room: #{@chat_room.users.inspect}"
+    
+    # @receiver = @chat_room.users.where.not(id: @current_user.id).first
+    puts "📡 Receiver resolved: #{@receiver&.name || 'nil'}"
   end
 
   # GET /chat_rooms/new
@@ -23,7 +30,8 @@ class ChatRoomsController < ApplicationController
   # POST /chat_rooms or /chat_rooms.json
   def create
     @chat_room = ChatRoom.new(chat_room_params)
-
+    @chat_room.streamer = current_user
+  
     respond_to do |format|
       if @chat_room.save
         format.html { redirect_to chat_room_url(@chat_room), notice: "Chat room was successfully created." }
