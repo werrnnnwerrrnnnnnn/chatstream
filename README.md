@@ -1,15 +1,23 @@
-#  Ruby on Rails Boilerplate with Docker
+# 💬 ChatStream : Real-Time Chat & Livestreaming App
 
-By : **Tatiya Seehatrakul**
+- **By : Tatiya Seehatrakul st124875**
+- This project is developed to fulfill the requirements of the AT70.15	Advanced Topics in Internet Technology course at the Asian Institute of Technology (AIT) for the January 2025 semester.
+
+## 📍 Project Overview
+**ChatStream** is a real-time Rails application with Devise authentication, supporting instant messaging and one-way livestreaming via WebRTC. Authenticated users can create rooms, send messages, and stream video as broadcasters. Viewers connect peer-to-peer using ICE/STUN, with canvas fallback for cross-browser video rendering.
 
 ---
 
+#  Ruby on Rails Boilerplate with Docker
+
 ## 📍 Pre-requisites
 
-- [Docker](https://www.docker.com/)
-- [Ruby](https://www.ruby-lang.org/en/)
-- [Rails](https://rubyonrails.org/)
-- [PostgreSQL](https://www.postgresql.org/)
+This project requires the following tools to be installed before setup:
+
+* [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+* [![Ruby](https://img.shields.io/badge/Ruby-CC342D?style=for-the-badge&logo=ruby&logoColor=white)](https://www.ruby-lang.org/en/)
+* [![Rails](https://img.shields.io/badge/Rails-CC0000?style=for-the-badge&logo=rubyonrails&logoColor=white)](https://rubyonrails.org/)
+* [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
 ---
 
