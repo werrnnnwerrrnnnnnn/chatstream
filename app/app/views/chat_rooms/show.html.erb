@@ -1,39 +1,40 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Chat Room" %>
 
 <div id="chat-room-id"
      data-chat-room-id="<%= @chat_room.id %>"
      data-sender-id="<%= current_user.id %>"
-     data-is-streamer="<%= current_user == @chat_room.streamer %>">
+     data-is-streamer="<%= current_user == @chat_room.streamer %>"
+     class="container my-4">
 
   <% if current_user == @chat_room.streamer %>
-    <button id="start-stream">Start Streaming</button>
+    <div class="mb-3">
+      <button id="start-stream" class="btn btn-danger">🎥 Start Streaming</button>
+    </div>
   <% end %>
 
-  <div>
-    <video id="localVideo" autoplay muted playsinline style="width: 300px; border-radius: 8px;"></video>
+  <div class="d-flex flex-wrap gap-3 mb-3">
+    <video id="localVideo" autoplay muted playsinline class="rounded border" style="width: 300px;"></video>
     <video id="remoteVideo" autoplay playsinline muted style="display: none;"></video>
-    <p id="video-status" style="font-size: 12px; color: gray;">Waiting for stream to start...</p>
   </div>
 
-  <div id="messages">
+  <p id="video-status" class="text-muted small mb-4">📡 Waiting for stream to start...</p>
+
+  <div id="messages" class="mb-4">
     <%= render @chat_room.messages %>
   </div>
 
-  <%= form_with(model: [@chat_room, Message.new], local: true) do |form| %>
-    <div>
-      <%= form.text_field :user, placeholder: "Your name" %>
+  <%= form_with(model: [@chat_room, Message.new], local: true, class: "mb-4") do |form| %>
+    <div class="mb-2">
+      <%= form.text_area :content, placeholder: "Type your message...", class: "form-control", rows: 3 %>
     </div>
-    <div>
-      <%= form.text_area :content, placeholder: "Type your message..." %>
-    </div>
-    <%= form.submit "Send" %>
+    <%= form.submit "Send", class: "btn btn-primary" %>
   <% end %>
 
-  <%= render @chat_room %>
-
-  <div>
-    <%= link_to "Edit this chat room", edit_chat_room_path(@chat_room) %> |
-    <%= link_to "Back to chat rooms", chat_rooms_path %>
-    <%= button_to "Destroy this chat room", @chat_room, method: :delete %>
+  <div class="d-flex justify-content-between mt-5">
+    <div>
+      <%= link_to "✏️ Edit this chat room", edit_chat_room_path(@chat_room), class: "btn btn-outline-secondary me-2" %>
+      <%= link_to "🔙 Back to chat rooms", chat_rooms_path, class: "btn btn-outline-primary" %>
+    </div>
+    <%= button_to "🗑️ Destroy this chat room", @chat_room, method: :delete, class: "btn btn-danger" %>
   </div>
 </div>

@@ -24,6 +24,7 @@ class MessagesController < ApplicationController
   def create
     @chat_room = ChatRoom.find(params[:chat_room_id])
     @message = @chat_room.messages.build(message_params)
+    @message.user = current_user
   
     if @message.save
       # ✅ Broadcast the rendered message partial
@@ -77,6 +78,6 @@ class MessagesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def message_params
-      params.require(:message).permit(:content, :user, :chat_room_id)
+      params.require(:message).permit(:content)
     end
 end
