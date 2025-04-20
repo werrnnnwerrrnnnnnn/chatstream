@@ -1,26 +1,41 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Chat Rooms" %>
 
-<% content_for :title, "Chat rooms" %>
-
-<h1>Chat rooms</h1>
-
-<div id="chat_rooms">
-  <% @chat_rooms.each do |chat_room| %>
-    <% if chat_room.present? %>
-      <%= render chat_room %>
-      <p>
-        <%= link_to "Show this chat room", chat_room_path(chat_room) %>
-      </p>
-    <% end %>
+<div class="container">
+  <% if notice %>
+    <div class="alert alert-success">
+      <%= notice %>
+    </div>
   <% end %>
+
+  <% if flash[:notice] %>
+    <div class="alert alert-success">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <% if flash[:alert] %>
+    <div class="alert alert-danger">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">💬 Chat Rooms</h1>
+    <%= link_to "➕ New Chat Room", new_chat_room_path, class: "btn btn-success" %>
+  </div>
+
+  <div id="chat_rooms" class="row g-4">
+    <% @chat_rooms.each do |chat_room| %>
+      <% if chat_room.present? %>
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <%= render chat_room %>
+              <%= link_to "🔗 View Room", chat_room_path(chat_room), class: "btn btn-outline-primary mt-3" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
 </div>
-
-<%= link_to "New chat room", new_chat_room_path %>
-
-<% if flash[:notice] %>
-  <p style="color: green;"><%= flash[:notice] %></p>
-<% end %>
-
-<% if flash[:alert] %>
-  <p style="color: red;"><%= flash[:alert] %></p>
-<% end %>
