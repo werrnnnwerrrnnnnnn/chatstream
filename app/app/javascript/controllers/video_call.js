@@ -21,27 +21,40 @@ document.addEventListener("chatRoomChannelReady", () => {
     const vid = document.getElementById("remoteVideo");
     vid.style.display = "none";
   
+    // 🟩 Find .card-body.text-center inside viewer layout
+    const cardBody = document.querySelector("#chat-room-id .card-body.text-center");
+    if (!cardBody) {
+      console.warn("❌ Could not find .card-body.text-center to insert canvas.");
+      return;
+    }
+  
+    // 🟩 Canvas
     const canvas = document.createElement("canvas");
+
+    // Set internal resolution (draw size)
     canvas.width = 300;
     canvas.height = 200;
+
+    // Responsive layout via CSS
+    canvas.className = "w-100 rounded border mb-2"; // Bootstrap
+    canvas.style.aspectRatio = "3 / 2"; // keeps 300x200 ratio (optional)
     canvas.style.border = "2px solid green";
-    canvas.style.borderRadius = "8px";
-    
-    const messagesDiv = document.getElementById("messages");
-    messagesDiv.parentNode.insertBefore(canvas, messagesDiv);
-    
-    // ✅ 👇 Insert status text below the canvas
-    const existingStatus = document.getElementById("video-status");
-    if (existingStatus) existingStatus.remove();
-    
+    canvas.style.objectFit = "cover"; // prevent stretch/squish
+    canvas.style.display = "block";
+  
+    // 🟩 Status
     const statusText = document.createElement("p");
     statusText.id = "video-status";
     statusText.className = "text-muted small";
     statusText.innerText = "👾 Waiting for stream to start...";
-    canvas.parentNode.insertBefore(statusText, canvas.nextSibling);
   
+    // 🧱 Insert before the hidden video tag
+    const remoteVideo = document.getElementById("remoteVideo");
+    cardBody.insertBefore(canvas, remoteVideo);
+    cardBody.insertBefore(statusText, remoteVideo);
+  
+    // 🖼️ Draw stream into canvas
     const ctx = canvas.getContext("2d");
-  
     setInterval(() => {
       if (vid.readyState >= 2) {
         ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
@@ -67,7 +80,7 @@ function initializeStreaming() {
             console.log("🎥 Remote video ready to play");
             remoteVideo.play()
               .then(() => {
-                document.getElementById("video-status").innerText = "👾 Streaming...";
+                document.getElementById("video-status").innerText = "👾 Streamer is now live...";
               })
               .catch(e => {
                 console.error("❌ Video play error:", e);

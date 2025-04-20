@@ -12,29 +12,39 @@
     </div>
   <% end %>
 
-  <div class="d-flex flex-wrap gap-3 mb-3">
-    <% if current_user == @chat_room.streamer %>
-      <div class="d-flex flex-column align-items-start mb-3">
-        <video id="localVideo" autoplay muted playsinline class="rounded border" style="width: 300px;"></video>
-        <p id="video-status" class="text-muted small mt-2">📡 Waiting to start stream...</p>
+  <div class="row">
+    <!-- 🎥 Video Section -->
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <% if current_user == @chat_room.streamer %>
+            <video id="localVideo" autoplay muted playsinline class="rounded border mb-2" style="width: 100%;"></video>
+            <p id="video-status" class="text-muted small">📡 Waiting to start stream...</p>
+          <% end %>
+          <video id="remoteVideo" autoplay playsinline muted style="display: none;"></video>
+        </div>
       </div>
-    <% end %>
-    <video id="remoteVideo" autoplay playsinline muted style="display: none;"></video>
-  </div>
-
-  <div id="messages" class="mb-4">
-    <%= turbo_stream_from @chat_room %>
-    <%= render @chat_room.messages %>
-  </div>
-
-  <%= form_with(model: [@chat_room, Message.new], local: false, data: { controller: "message-submit reset-form", action: "turbo:submit-end->reset-form#reset" }, class: "mb-4") do |form| %>
-    <div class="mb-2">
-      <%= form.text_area :content, placeholder: "Type your message...", class: "form-control", rows: 3 %>
     </div>
-    <%= form.submit "Send", class: "btn btn-primary" %>
-  <% end %>
 
-  <div class="d-flex justify-content-between mt-5">
+    <!-- 💬 Messages Section -->
+    <div class="col-md-8 d-flex flex-column">
+      <div class="card shadow-sm mb-3 flex-grow-1 overflow-hidden">
+        <div class="card-body overflow-auto" id="messages" style="max-height: 400px;">
+          <%= turbo_stream_from @chat_room %>
+          <%= render @chat_room.messages %>
+        </div>
+      </div>
+
+      <%= form_with(model: [@chat_room, Message.new], local: false, data: { controller: "message-submit reset-form", action: "turbo:submit-end->reset-form#reset" }, class: "mb-4") do |form| %>
+        <div class="mb-2">
+          <%= form.text_area :content, placeholder: "Type your message...", class: "form-control", rows: 3 %>
+        </div>
+        <%= form.submit "Send", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+
+  <!-- 🔗 Action Buttons -->
+  <div class="d-flex justify-content-between mt-4">
     <div>
       <%= link_to "✏️ Edit this chat room", edit_chat_room_path(@chat_room), class: "btn btn-outline-secondary me-2" %>
       <%= link_to "🔙 Back to chat rooms", chat_rooms_path, class: "btn btn-outline-primary" %>
