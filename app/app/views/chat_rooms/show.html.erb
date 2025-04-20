@@ -13,7 +13,9 @@
   <% end %>
 
   <div class="d-flex flex-wrap gap-3 mb-3">
-    <video id="localVideo" autoplay muted playsinline class="rounded border" style="width: 300px;"></video>
+    <% if current_user == @chat_room.streamer %>
+      <video id="localVideo" autoplay muted playsinline class="rounded border" style="width: 300px;"></video>
+    <% end %>
     <video id="remoteVideo" autoplay playsinline muted style="display: none;"></video>
   </div>
 

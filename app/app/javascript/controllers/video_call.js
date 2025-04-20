@@ -26,7 +26,8 @@ document.addEventListener("chatRoomChannelReady", () => {
     canvas.height = 200;
     canvas.style.border = "2px solid green";
     canvas.style.borderRadius = "8px";
-    document.getElementById("chat-room-id").appendChild(canvas);
+    const messagesDiv = document.getElementById("messages");
+    messagesDiv.parentNode.insertBefore(canvas, messagesDiv);
   
     const ctx = canvas.getContext("2d");
   
