@@ -53,5 +53,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_19_183022) do
   end
 
   add_foreign_key "chat_room_users", "chat_rooms"
+  add_foreign_key "chat_room_users", "users"
   add_foreign_key "messages", "chat_rooms"
 end
