@@ -43,10 +43,10 @@
       </div>
 
       <%= form_with(model: [@chat_room, Message.new], local: false, data: { controller: "message-submit reset-form", action: "turbo:submit-end->reset-form#reset" }, class: "mb-4") do |form| %>
-        <div class="mb-2">
-          <%= form.text_area :content, placeholder: "Type your message...", class: "form-control", rows: 3 %>
+        <div class="input-group">
+          <%= form.text_area :content, placeholder: "Type your message...", class: "form-control", rows: 1, style: "resize: none;" %>
+          <button class="btn btn-primary" type="submit">Send</button>
         </div>
-        <%= form.submit "Send", class: "btn btn-primary" %>
       <% end %>
     </div>
 
