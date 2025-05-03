@@ -32,13 +32,15 @@
         <div class="card-body d-flex flex-column" id="messages" style="max-height: 400px; overflow-y: auto;">
           <%= turbo_stream_from @chat_room %>
 
+          <!-- 🔔 This placeholder will be removed via Turbo Stream -->
           <% if @chat_room.messages.empty? %>
-            <div class="text-start text-muted mt-2">
+            <div id="no-messages-placeholder" class="text-start text-muted mt-2">
               💬 <em>No messages yet. Start the conversation below!</em>
             </div>
-          <% else %>
-            <%= render @chat_room.messages %>
           <% end %>
+
+          <!-- 💬 Render all messages -->
+          <%= render @chat_room.messages %>
         </div>
       </div>
 
