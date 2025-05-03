@@ -1,7 +1,7 @@
 class ChatRoomsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_chat_room, only: %i[ show edit update destroy ]
-  before_action :authorize_owner!, only: [:destroy]
+  before_action :authorize_owner!, only: [:edit, :update, :destroy]
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
 
   # GET /chat_rooms or /chat_rooms.json
@@ -65,7 +65,7 @@ class ChatRoomsController < ApplicationController
 
   def authorize_owner!
     unless current_user.id == @chat_room.streamer_id
-      redirect_to chat_rooms_path, alert: "You are not authorized to delete this room."
+      redirect_to chat_rooms_path, alert: "You are not authorized to edit or delete this chat room."
     end
   end
 
