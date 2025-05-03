@@ -6,6 +6,15 @@
      data-is-streamer="<%= current_user == @chat_room.streamer %>"
      class="container my-4">
 
+  <!-- 🧾 Chat Room Name -->
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">
+        <span class="badge bg-light text-dark shadow-sm px-4 py-2 text-wrap d-inline-block" style="min-width: 100%; max-width: 100%;">
+          🗨️ Chat Room: <%= h(@chat_room.name).truncate(90) %>
+        </span>
+      </h2>
+    </div>
+
   <div class="row">
     <!-- 🎥 Video Section -->
     <div class="col-md-4 mb-0">
