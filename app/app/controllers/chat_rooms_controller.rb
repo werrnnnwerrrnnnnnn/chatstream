@@ -1,6 +1,7 @@
 class ChatRoomsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_chat_room, only: %i[ show edit update destroy ]
+  before_action :authorize_owner!, only: [:destroy]
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
 
   # GET /chat_rooms or /chat_rooms.json
@@ -58,18 +59,20 @@ class ChatRoomsController < ApplicationController
 
   # DELETE /chat_rooms/1 or /chat_rooms/1.json
   def destroy
-    @chat_room.destroy!
+    @chat_room.destroy
+    redirect_to chat_rooms_path, notice: "Chat room deleted successfully."
+  end
 
-    respond_to do |format|
-      format.html { redirect_to chat_rooms_url, notice: "Chat room was successfully destroyed." }
-      format.json { head :no_content }
+  def authorize_owner!
+    unless current_user.id == @chat_room.streamer_id
+      redirect_to chat_rooms_path, alert: "You are not authorized to delete this room."
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_chat_room
-      @chat_room = ChatRoom.find(params[:id])
+      @chat_room = ChatRoom.includes(:streamer).find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
