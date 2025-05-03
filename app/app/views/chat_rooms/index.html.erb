@@ -12,7 +12,12 @@
         <div class="col-md-6">
           <div class="card h-100 shadow-sm">
             <div class="card-body">
-              <%= render chat_room %>
+              <p class="fw-bold mb-1">
+                <span class="d-inline-block text-truncate" style="max-width: 100%;" title="<%= chat_room.name %>">
+                  <%= truncate(chat_room.name, length: 70) %>
+                </span>
+              </p>
+
               <%= link_to "🔗 View Room", chat_room_path(chat_room), class: "btn btn-outline-primary mt-3" %>
             </div>
           </div>
