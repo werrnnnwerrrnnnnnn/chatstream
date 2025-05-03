@@ -27,12 +27,14 @@
     </div>
 
     <!-- 💬 Messages Section -->
-    <div class="col-md-8 d-flex flex-column">
-      <div class="card shadow-sm mb-3 flex-grow-1 overflow-hidden">
+    <div class="col-md-8 d-flex flex-column" style="max-height: 50vh;">
+      <!-- Messages List -->
+      <div class="card shadow-sm mb-3 flex-grow-1 d-flex flex-column" style="min-height: 400px;">
         <div data-controller="auto-scroll"
             id="messages"
-            class="card-body d-flex flex-column"
-            style="max-height: 400px; overflow-y: auto;">
+            class="card-body flex-grow-1 overflow-auto"
+            style="min-height: 400px;">
+            
           <%= turbo_stream_from @chat_room %>
 
           <% if @chat_room.messages.empty? %>
