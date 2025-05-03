@@ -29,25 +29,30 @@
     <!-- 💬 Messages Section -->
     <div class="col-md-8 d-flex flex-column">
       <div class="card shadow-sm mb-3 flex-grow-1 overflow-hidden">
-        <div data-controller="auto-scroll" id="messages" class="card-body d-flex flex-column" style="max-height: 400px; overflow-y: auto;">
+        <div data-controller="auto-scroll"
+            id="messages"
+            class="card-body d-flex flex-column"
+            style="max-height: 400px; overflow-y: auto;">
           <%= turbo_stream_from @chat_room %>
 
-          <!-- 🔔 This placeholder will be removed via Turbo Stream -->
           <% if @chat_room.messages.empty? %>
             <div id="no-messages-placeholder" class="text-start text-muted mt-2">
               💬 <em>No messages yet. Start the conversation below!</em>
             </div>
           <% end %>
 
-          <!-- 💬 Render all messages -->
           <%= render @chat_room.messages %>
         </div>
       </div>
-    </div>
 
-      <%= form_with(model: [@chat_room, Message.new], local: false, data: { controller: "message-submit reset-form", action: "turbo:submit-end->reset-form#reset" }, class: "mb-4") do |form| %>
+      <!-- ✉️ Form matches full width of message box -->
+      <%= form_with(model: [@chat_room, Message.new], local: false, data: { controller: "message-submit reset-form", action: "turbo:submit-end->reset-form#reset" }) do |form| %>
         <div class="input-group">
-          <%= form.text_area :content, placeholder: "Type your message...", class: "form-control", rows: 1, style: "resize: none;" %>
+          <%= form.text_area :content,
+                placeholder: "Type your message...",
+                class: "form-control",
+                rows: 1,
+                style: "resize: none;" %>
           <button class="btn btn-primary" type="submit">Send</button>
         </div>
       <% end %>
