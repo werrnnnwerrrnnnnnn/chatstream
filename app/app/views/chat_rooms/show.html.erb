@@ -73,7 +73,9 @@
           <%= link_to "✏️ Edit this chat room", edit_chat_room_path(@chat_room), class: "btn btn-outline-secondary me-2" %>
           <%= link_to "🔙 Back to chat rooms", chat_rooms_path, class: "btn btn-outline-primary" %>
         </div>
-        <%= button_to "🗑️ Destroy this chat room", @chat_room, method: :delete, class: "btn btn-danger" %>
+          <% if current_user == @chat_room.streamer %>
+            <%= button_to "🗑️ Delete this room", @chat_room, method: :delete, class: "btn btn-danger" %>
+          <% end %>
       </div>
     </div>
   </div>
