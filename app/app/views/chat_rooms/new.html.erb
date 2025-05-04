@@ -1,15 +1,19 @@
 <% content_for :title, "New Chat Room" %>
 
-<div class="container mt-5">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h1 class="card-title mb-4">➕ New Chat Room</h1>
-
-      <%= render "form", chat_room: @chat_room %>
-
-      <div class="mt-4">
-        <%= link_to "⬅️ Back to Chat Rooms", chat_rooms_path, class: "btn btn-outline-secondary" %>
-      </div>
+<div class="container d-flex justify-content-center mt-5">
+  <div class="card shadow-sm p-4" style="max-width: 550px; width: 100%;">
+    <div class="text-center mb-4">
+      <h1 class="card-title fw-bold text-primary">➕ Create New Chat Room</h1>
     </div>
+
+    <!-- Only ONE form_with here -->
+    <%= form_with(model: @chat_room, class: "needs-validation") do |form| %>
+      <!-- Pass the form object into partial -->
+    
+      <!-- Buttons (inside form) -->
+      <div class="d-flex justify-content-center gap-2 mt-0 flex-wrap">
+        <%= render "form", chat_room: @chat_room, form: form %>
+      </div>
+    <% end %>
   </div>
 </div>
