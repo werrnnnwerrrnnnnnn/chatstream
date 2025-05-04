@@ -8,6 +8,34 @@
 
 ---
 
+# Enabling Camera/Mic Access for Local Development
+
+For WebRTC video streaming over HTTP during development:
+
+### 🦊 Firefox (Recommended for IP testing)
+
+Firefox allows camera/mic access over **HTTP using local IPs**.
+
+1. In Firefox address bar, go to: `about:config`
+2. Accept the risk warning.
+3. Set the following to `true`:
+   - `media.devices.insecure.enabled`
+   - `media.getusermedia.insecure.enabled`
+4. This allows access to camera/mic APIs on IPs for LAN testing.
+
+### 🌐 Chrome, Edge, Brave
+
+- These browsers **block getUserMedia over HTTP** for non-`localhost` IPs (e.g., `http://192.168.x.x`).
+- Recommended:
+  - Run your app on `localhost`, which is treated as a [secure context](https://w3c.github.io/webappsec-secure-contexts/#localhost).
+  - Or expose your local server using [ngrok](https://ngrok.com) to get an HTTPS tunnel.
+- References:
+  - [Mozilla blog on HTTPS for media](https://blog.mozilla.org/webrtc/camera-microphone-require-https-in-firefox-68/)
+  - [W3C Secure Context Spec](https://w3c.github.io/webappsec-secure-contexts/#localhost)
+  - [Chromium Intent to Remove Nonsecure Usage of MediaDevices](https://groups.google.com/a/chromium.org/g/blink-dev/c/SGWYHfR5CyY/m/uyUBJZAqBwAJ)
+
+---
+
 #  Ruby on Rails Boilerplate with Docker
 
 ## 📍 Pre-requisites
