@@ -1,39 +1,82 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, "Chat Room" %>
 
 <div id="chat-room-id"
      data-chat-room-id="<%= @chat_room.id %>"
      data-sender-id="<%= current_user.id %>"
-     data-is-streamer="<%= current_user == @chat_room.streamer %>">
+     data-is-streamer="<%= current_user == @chat_room.streamer %>"
+     class="container my-4">
 
-  <% if current_user == @chat_room.streamer %>
-    <button id="start-stream">Start Streaming</button>
-  <% end %>
-
-  <div>
-    <video id="localVideo" autoplay muted playsinline style="width: 300px; border-radius: 8px;"></video>
-    <video id="remoteVideo" autoplay playsinline muted style="display: none;"></video>
-    <p id="video-status" style="font-size: 12px; color: gray;">Waiting for stream to start...</p>
-  </div>
-
-  <div id="messages">
-    <%= render @chat_room.messages %>
-  </div>
-
-  <%= form_with(model: [@chat_room, Message.new], local: true) do |form| %>
-    <div>
-      <%= form.text_field :user, placeholder: "Your name" %>
+  <!-- 🧾 Chat Room Name -->
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">
+        <span class="badge bg-light text-dark shadow-sm px-4 py-2 text-wrap d-inline-block" style="min-width: 100%; max-width: 100%;">
+          🗨️ Chat Room: <%= h(@chat_room.name).truncate(90) %>
+        </span>
+      </h2>
     </div>
-    <div>
-      <%= form.text_area :content, placeholder: "Type your message..." %>
+
+  <div class="row">
+    <!-- 🎥 Video Section -->
+    <div class="col-md-4 mb-0">
+      <div class="card shadow-sm mb-3">
+        <div class="card-body text-center">
+          <% if current_user == @chat_room.streamer %>
+            <video id="localVideo" autoplay muted playsinline class="rounded border mb-2" style="width: 100%;"></video>
+            <p id="video-status" class="text-muted small">📡 Waiting to start stream...</p>
+          <% end %>
+          <video id="remoteVideo" autoplay playsinline muted style="display: none;"></video>
+        </div>
+      </div>
+
+      <% if current_user == @chat_room.streamer %>
+        <div class="mt-2">
+          <button id="start-stream" class="btn btn-danger w-100">🎥 Start Streaming</button>
+        </div>
+      <% end %>
     </div>
-    <%= form.submit "Send" %>
-  <% end %>
+    <!-- 💬 Messages Section -->
+    <div class="col-md-8 d-flex flex-column" style="max-height: 50vh;">
+      <!-- Messages List -->
+      <div class="card shadow-sm mb-3 flex-grow-1 d-flex flex-column" style="min-height: 400px;">
+        <div data-controller="auto-scroll"
+            id="messages"
+            class="card-body flex-grow-1 overflow-auto"
+            style="min-height: 400px;">
+            
+          <%= turbo_stream_from @chat_room %>
 
-  <%= render @chat_room %>
+          <% if @chat_room.messages.empty? %>
+            <div id="no-messages-placeholder" class="text-start text-muted mt-2">
+              💬 <em>No messages yet. Start the conversation below!</em>
+            </div>
+          <% end %>
 
-  <div>
-    <%= link_to "Edit this chat room", edit_chat_room_path(@chat_room) %> |
-    <%= link_to "Back to chat rooms", chat_rooms_path %>
-    <%= button_to "Destroy this chat room", @chat_room, method: :delete %>
+          <%= render @chat_room.messages %>
+        </div>
+      </div>
+
+      <!-- ✉️ Form matches full width of message box -->
+      <%= form_with(model: [@chat_room, Message.new], local: false, data: { controller: "message-submit reset-form", action: "turbo:submit-end->reset-form#reset" }) do |form| %>
+        <div class="input-group mb-3">
+          <%= form.text_area :content,
+                placeholder: "Type your message...",
+                class: "form-control",
+                rows: 1,
+                style: "resize: none;" %>
+          <button class="btn btn-primary" type="submit">Send</button>
+        </div>
+      <% end %>
+
+      <!-- 🔗 Action Buttons BELOW form, aligned left -->
+      <div class="d-flex justify-content-between">
+        <div>
+          <%= link_to "✏️ Edit this chat room", edit_chat_room_path(@chat_room), class: "btn btn-outline-secondary me-2" %>
+          <%= link_to "🔙 Back to All Rooms", chat_rooms_path, class: "btn btn-outline-primary" %>
+        </div>
+          <% if current_user == @chat_room.streamer %>
+            <%= button_to "🗑️ Delete this room", @chat_room, method: :delete, class: "btn btn-danger" %>
+          <% end %>
+      </div>
+    </div>
   </div>
 </div>

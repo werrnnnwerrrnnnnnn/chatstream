@@ -24,25 +24,15 @@ class MessagesController < ApplicationController
   def create
     @chat_room = ChatRoom.find(params[:chat_room_id])
     @message = @chat_room.messages.build(message_params)
+    @message.user = current_user
   
     if @message.save
-      # ✅ Broadcast the rendered message partial
-      ActionCable.server.broadcast(
-        "chat_room_#{@chat_room.id}",
-        {
-          message: render_to_string(partial: "messages/message", locals: { message: @message })
-        }
-      )
-  
       respond_to do |format|
-        format.html { redirect_to @chat_room, notice: 'Message was successfully created.' }
-        format.json { render :show, status: :created, location: @message }
+        format.turbo_stream
+        format.html { redirect_to @chat_room }
       end
     else
-      respond_to do |format|
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
-      end
+      render "chat_rooms/show", status: :unprocessable_entity
     end
   end
 
@@ -77,6 +67,6 @@ class MessagesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def message_params
-      params.require(:message).permit(:content, :user, :chat_room_id)
+      params.require(:message).permit(:content)
     end
 end

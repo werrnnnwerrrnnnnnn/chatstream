@@ -1,0 +1,30 @@
+<!-- Include Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="form-modal mx-auto my-5 p-4 border rounded shadow" style="max-width: 400px;">
+  <h2 class="text-center mb-4">Sign Up</h2>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= f.email_field :email, placeholder: "Enter your email", class: "form-control mb-3" %>
+    <%= f.password_field :password, placeholder: "Create password", class: "form-control mb-3" %>
+    <%= f.password_field :password_confirmation, placeholder: "Confirm password", class: "form-control mb-3" %>
+    <%= f.submit "Create Account", class: "btn btn-success w-100 mb-2" %>
+  <% end %>
+
+  <p class="text-center">
+    <%= link_to "Log in", new_session_path(resource_name), class: "text-secondary" %>
+  </p>
+</div>
+
+<!-- JS (specific to sign-up page, if needed) -->
+<script>
+  console.log("Signup page loaded");
+</script>
+
+<style>
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+</style>

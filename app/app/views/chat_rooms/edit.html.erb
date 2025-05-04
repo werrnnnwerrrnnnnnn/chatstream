@@ -1,12 +1,24 @@
-<% content_for :title, "Editing chat room" %>
+<div class="container mt-5" style="max-width: 600px;">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <!-- Heading -->
+      <h1 class="mb-2 fw-bold text-primary text-center">📝 Edit Chat Room</h1>
+      <p class="text-center text-muted mb-4">Current Name: <span class="fw-semibold"><%= @chat_room.name %></span></p>
 
-<h1>Editing chat room</h1>
+      <!-- Form -->
+      <%= form_with(model: @chat_room, class: "needs-validation") do |form| %>
+        <div class="mb-3 d-flex align-items-center">
+          <%= form.label :name, "Name", class: "me-3 mb-0" %>
+          <%= form.text_field :name, class: "form-control", placeholder: "Enter a room name" %>
+        </div>
 
-<%= render "form", chat_room: @chat_room %>
-
-<br>
-
-<div>
-  <%= link_to "Show this chat room", @chat_room %> |
-  <%= link_to "Back to chat rooms", chat_rooms_path %>
+        <!-- All Buttons Aligned Horizontally -->
+        <div class="d-flex justify-content-center gap-2 mt-4 flex-wrap">
+          <%= link_to "🔍 View This Room", @chat_room, class: "btn btn-outline-secondary" %>
+          <%= form.submit "💾 Update Chat Room", class: "btn btn-primary" %>
+          <%= link_to "🔙 Back to All Rooms", chat_rooms_path, class: "btn btn-outline-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>

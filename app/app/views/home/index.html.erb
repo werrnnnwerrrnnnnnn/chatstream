@@ -1,2 +1,64 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+<div class="container text-center mt-5">
+  <!-- 💬 Welcome Section -->
+  <h1 class="typing-effect mb-2">Welcome to ChatStream</h1>
+  <p class="mb-4">〰️ A real-time chat and livestreaming app 〰️</p>
+
+  <div class="mb-4">
+    <%= link_to "💬 Enter Chat Rooms", chat_rooms_path, class: "btn btn-lg btn-primary px-4 py-2 shadow" %>
+  </div>
+
+  <!-- 🔽 Toggle Button -->
+  <a class="text-decoration-underline text-secondary cursor-pointer" 
+    data-bs-toggle="collapse" 
+    href="#extraInfo" 
+    role="button" 
+    aria-expanded="false" 
+    aria-controls="extraInfo">
+    💌 Contact Me
+  </a>
+</div>
+
+<!-- 🔽 Collapsible Container -->
+<div class="container collapse mt-4" id="extraInfo">
+  <div class="mx-auto p-4 rounded-4 shadow-sm" style="max-width: 750px; background-color: #f9f9f9; border: 1px solid #ddd;">
+    <!-- 📬 Contact Section -->
+    <div class="d-flex justify-content-center flex-wrap gap-3 mb-4">
+      <a href="mailto:st124875@ait.asia" class="btn btn-outline-secondary rounded-pill shadow-sm">📧 st124875@ait.asia</a>
+      <a href="https://github.com/werrnnnwerrrnnnnnn/chatstream" target="_blank" class="btn btn-outline-secondary rounded-pill shadow-sm">
+        👻 GitHub : chatstream
+      </a>
+    </div>
+
+    <!-- 🗺️ Map Container -->
+    <div class="mapouter">
+      <div class="gmap_canvas">
+        <iframe class="gmap_iframe w-100 rounded border shadow-sm"
+                frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                style="height: 350px;"
+                src="https://maps.google.com/maps?width=650&amp;height=350&amp;hl=en&amp;q=Asian Institute of Technology, Thailand&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .typing-effect {
+    display: inline-block;
+    overflow: hidden;
+    border-right: 2px solid #333;
+    white-space: nowrap;
+    animation: typing 3s steps(60), blink 1s step-end infinite;
+    font-weight: bold;
+    font-size: 2.5rem;
+  }
+
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 20ch } /* adjust to match character count */
+  }
+
+  @keyframes blink {
+    50% { border-color: transparent }
+  }
+</style>

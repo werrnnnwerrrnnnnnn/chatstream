@@ -1,8 +1,7 @@
-<%= form_with(model: chat_room) do |form| %>
+<%= form_with(model: chat_room, class: "needs-validation") do |form| %>
   <% if chat_room.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(chat_room.errors.count, "error") %> prohibited this chat_room from being saved:</h2>
-
+    <div class="alert alert-danger">
+      <h4><%= pluralize(chat_room.errors.count, "error") %> prohibited this chat room from being saved:</h4>
       <ul>
         <% chat_room.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,12 +10,17 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
+  <div class="row mb-3 align-items-center">
+    <div class="col-sm-2 text-end">
+      <%= form.label :name, chat_room.persisted? ? "Updated Name" : "Name", class: "me-3 mb-0" %>
+    </div>
+    <div class="col-sm-9">
+      <%= form.text_field :name, class: "form-control", placeholder: "Enter a room name" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.submit %>
+  <div class="text-center mt-3">
+    <%= form.submit chat_room.persisted? ? "💾 Update Chat Room" : "➕ Create Chat Room", class: "btn btn-primary px-4 py-2 shadow-sm" %>
+    <%= link_to "🔙 Back to All Rooms", chat_rooms_path, class: "btn btn-outline-secondary px-4 py-2 shadow-sm" %>
   </div>
 <% end %>
